@@ -1,16 +1,12 @@
-package com.venom.gamereview.game;
+package com.venom.game;
 
 
-import com.venom.gamereview.customException.GameNotFoundException;
+import com.venom.game.Exceptions.GameNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
-
-
-import static com.fasterxml.jackson.databind.jsonFormatVisitors.JsonValueFormat.UUID;
 
 @RestController
 @RequestMapping("/v1.0/")
@@ -25,12 +21,12 @@ public class GameController {
 
     @GetMapping("/game/{id}")
     public ResponseEntity<Game> getGameById(@PathVariable(value = "id")String id) throws  GameNotFoundException{
-        Game game = gameRepository.findById(java.util.UUID.fromString(id)).orElseThrow(()->new GameNotFoundException("No Game with such id present Found"));
+        Game game = gameRepository.findById(java.util.UUID.fromString(id)).orElseThrow(
+                ()->new GameNotFoundException("No Game with such id present Found"));
         return ResponseEntity.ok().body(game);
     }
     @PostMapping("/game")
     public Game createGame(@RequestBody Game game){
-//        java.util.UUID uuid = UUID.randomUUID();
         game.setId(java.util.UUID.randomUUID());
         return gameRepository.save(game);
     }
@@ -38,7 +34,8 @@ public class GameController {
     @PutMapping("/game/{id}")
     public ResponseEntity updateGame(@PathVariable(value = "id") String id, @RequestBody Game game)
             throws GameNotFoundException{
-        Game updatedGame = gameRepository.findById(java.util.UUID.fromString(id)).orElseThrow(()->new GameNotFoundException("No Game to change"));
+        Game updatedGame = gameRepository.findById(java.util.UUID.fromString(id)).orElseThrow(
+                ()->new GameNotFoundException("No Game to change"));
         updatedGame.setGameName(game.getGameName());
         updatedGame.setGameGenre(game.getGameGenre());
         gameRepository.save(updatedGame);

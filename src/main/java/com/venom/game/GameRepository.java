@@ -1,4 +1,4 @@
-package com.venom.gamereview.game;
+package com.venom.game;
 
 
 import org.springframework.data.mongodb.repository.MongoRepository;

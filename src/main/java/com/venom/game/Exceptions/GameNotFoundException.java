@@ -1,4 +1,4 @@
-package com.venom.gamereview.customException;
+package com.venom.game.Exceptions;
 
 public class GameNotFoundException extends Exception{
     public GameNotFoundException(String message){

@@ -1,4 +1,4 @@
-package com.venom.gamereview;
+package com.venom.game;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
