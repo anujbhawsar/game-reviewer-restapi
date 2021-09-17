@@ -9,11 +9,8 @@ import java.util.UUID;
 @Data
 @Document
 public class Game {
-
     @MongoId
     private UUID id;
-    private String gameName;
-    private String gameGenre;
-
-
+    private String name;
+    private String genre;
 }

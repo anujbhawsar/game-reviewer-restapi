@@ -1,6 +1,8 @@
 package com.venom.game.review;
 
-import com.venom.game.Exceptions.ReviewNotFoundException;
+import com.venom.game.exceptions.GameNotFoundException;
+import com.venom.game.exceptions.ReviewNotFoundException;
+import com.venom.game.GameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,51 +11,52 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/v1.0/game/")
+@RequestMapping("/v1.0/games/{gameID}")
 public class ReviewController {
     @Autowired
     private ReviewRepository reviewRepository;
+    @Autowired
+    private GameRepository gameRepository;
 
-    @GetMapping("/{gameID}/review")
-    public List<Review> getAllGameReview(@PathVariable(value = "gameID")UUID gameID){
+    @GetMapping("/reviews")
+    public List<Review> getAllGameReview(@PathVariable(value = "gameID")UUID gameID) throws GameNotFoundException{
+       gameRepository.findById(gameID).orElseThrow(
+                ()->new GameNotFoundException());
         return reviewRepository.findAllByGameID(gameID);
     }
 
-    @GetMapping("/review/{reviewID}")
-    public Review getReview(@PathVariable(value = "reviewID")UUID reviewID) throws ReviewNotFoundException {
-        return reviewRepository.findById(reviewID).orElseThrow(()->new ReviewNotFoundException("Review ID not found"));
-    }
-    @GetMapping("/review")
-    public List<Review> getAllReview(){
-            return reviewRepository.findAll();
-    }
-
-    @PostMapping("/{gameID}/review")
-    public ResponseEntity addReview(@PathVariable(value = "gameID")UUID gameID,@RequestBody Review review){
+    @PostMapping("/reviews")
+    public ResponseEntity addReview(@PathVariable(value = "gameID")UUID gameID,@RequestBody Review review)throws GameNotFoundException{
+        gameRepository.findById(gameID).orElseThrow(
+                ()->new GameNotFoundException());
         review.setGameID(gameID);
-        review.setReviewID(java.util.UUID.randomUUID());
+        review.setId(java.util.UUID.randomUUID());
         reviewRepository.save(review);
         return ResponseEntity.ok(review);
     }
 
-    @PutMapping("/review/{reviewID}")
-    public ResponseEntity updateGame(@PathVariable(value = "reviewID") UUID reviewID, @RequestBody Review review)
-            throws ReviewNotFoundException {
+    @PutMapping("/reviews/{reviewID}")
+    public ResponseEntity updateReview(@PathVariable(value = "gameID")UUID gameID,
+                                       @PathVariable(value = "reviewID") UUID reviewID, @RequestBody Review review)
+            throws ReviewNotFoundException, GameNotFoundException {
+        gameRepository.findById(gameID).orElseThrow(
+                ()->new GameNotFoundException());
         Review updatedReview = reviewRepository.findById(reviewID).orElseThrow(
-                ()->new ReviewNotFoundException("No Review to change"));
-        if(review.getGameID()==null) {
-            updatedReview.setGameID(review.getGameID());
-        }
+                ()->new ReviewNotFoundException());
+        updatedReview.setGameID(review.getGameID());
         updatedReview.setAuthor(review.getAuthor());
         updatedReview.setContent(review.getContent());
         reviewRepository.save(updatedReview);
         return ResponseEntity.ok(updatedReview);
     }
 
-    @DeleteMapping("/review/{reviewID}")
-    public ResponseEntity deleteGame(@PathVariable(value = "reviewID") UUID reviewID) throws ReviewNotFoundException{
+    @DeleteMapping("/reviews/{reviewID}")
+    public ResponseEntity deleteReview(@PathVariable(value = "gameID")UUID gameID,@PathVariable(value = "reviewID") UUID reviewID)
+            throws ReviewNotFoundException, GameNotFoundException{
+        gameRepository.findById(gameID).orElseThrow(
+                ()->new GameNotFoundException());
         Review rmvReview = reviewRepository.findById(reviewID).orElseThrow(
-                ()->new ReviewNotFoundException("No game to delete"));
+                ()->new ReviewNotFoundException());
         reviewRepository.delete(rmvReview);
         return ResponseEntity.ok().body(rmvReview);
     }

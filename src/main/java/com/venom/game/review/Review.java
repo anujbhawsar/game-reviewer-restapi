@@ -9,9 +9,8 @@ import java.util.UUID;
 @Data
 @Document
 public class Review {
-
     @MongoId
-    private UUID reviewID;
+    private UUID id;
     private UUID gameID;
     private String author;
     private String content;

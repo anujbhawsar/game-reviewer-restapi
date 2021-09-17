@@ -6,6 +6,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface ReviewRepository extends MongoRepository<Review, UUID> {
-
     List<Review> findAllByGameID(UUID gameID);
 }
